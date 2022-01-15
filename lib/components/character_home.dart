@@ -133,95 +133,81 @@ class _CharacterHomeWidgetState extends State<CharacterHomeWidget> {
     final screenWidth = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              transitionDuration: const Duration(milliseconds: 350),
-              pageBuilder: (context, _, __) => CharacterDetailScreen(
-                character: widget.character,
+      child: AnimatedBuilder(
+        animation: widget.pageController,
+        builder: (context, child) {
+          double value = 1;
+          if (widget.pageController.position.haveDimensions) {
+            value = widget.pageController.page - widget.currentPage;
+            value = (1 - (value.abs() * 0.6)).clamp(0.0, 1.0);
+          }
+          return Stack(
+            children: [
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: ClipPath(
+                  clipper: CharacterCardBackgroundClipper(),
+                  child: Hero(
+                    tag: "background-${widget.character.name}",
+                    child: Container(
+                      height: screenHeight * 0.65,
+                      width: screenWidth * 0.9,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: //character.colors ??
+                              //     [
+                              //   Colors.purple.shade200,
+                              //   Colors.deepPurple.shade400
+                              // ],
+                              //[Colors.black12, Colors.black87],
+                              color ?? [Colors.black12, Colors.black87],
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
+              Align(
+                alignment: Alignment(1, -0.90),
+                child: Hero(
+                  tag: "image-${widget.character.name}",
+                  child: Image.network(
+                    widget.character.img ?? '',
+                    height: screenHeight * 0.6 * value,
+                    scale: 0.5, //* character.size,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 80, right: 40, left: 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Hero(
+                      tag: "name-${widget.character.name}",
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Container(
+                          child: Text(
+                            widget.character.name ?? "Pokemon Não Encontrado",
+                            style: AppTheme.heading,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'Weight ${widget.character.weight}',
+                      style: AppTheme.subHeading,
+                    ),
+                  ],
+                ),
+              )
+            ],
           );
         },
-        child: AnimatedBuilder(
-          animation: widget.pageController,
-          builder: (context, child) {
-            double value = 1;
-            if (widget.pageController.position.haveDimensions) {
-              value = widget.pageController.page - widget.currentPage;
-              value = (1 - (value.abs() * 0.6)).clamp(0.0, 1.0);
-            }
-            return Stack(
-              children: [
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ClipPath(
-                    clipper: CharacterCardBackgroundClipper(),
-                    child: Hero(
-                      tag: "background-${widget.character.name}",
-                      child: Container(
-                        height: screenHeight * 0.65,
-                        width: screenWidth * 0.9,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: //character.colors ??
-                                //     [
-                                //   Colors.purple.shade200,
-                                //   Colors.deepPurple.shade400
-                                // ],
-                                //[Colors.black12, Colors.black87],
-                                color ?? [Colors.black12, Colors.black87],
-                            begin: Alignment.topRight,
-                            end: Alignment.bottomLeft,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment(1, -0.90),
-                  child: Hero(
-                    tag: "image-${widget.character.name}",
-                    child: Image.network(
-                      widget.character.img ?? '',
-                      height: screenHeight * 0.6 * value,
-                      scale: 0.5, //* character.size,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(bottom: 80, right: 40, left: 40),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Hero(
-                        tag: "name-${widget.character.name}",
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Container(
-                            child: Text(
-                              widget.character.name ?? "Pokemon Não Encontrado",
-                              style: AppTheme.heading,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        'Weight ${widget.character.weight}',
-                        style: AppTheme.subHeading,
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            );
-          },
-        ),
       ),
     );
   }

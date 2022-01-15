@@ -3,6 +3,7 @@ import 'package:text_to_speech/models/pokemon.dart';
 import 'package:text_to_speech/services/remote_services.dart';
 
 class PokemonController extends GetxController {
+  
   var pokemonList = List<PokemonElement>().obs;
 
   @override
